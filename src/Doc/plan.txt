@@ -1,0 +1,455 @@
+PLAN OPÉRATIONNEL DE PROSPECTION
+
+Freelance .NET / Next.js / React Natif (mobile) piloté par l’intelligence artificielle
+
+Profil : Développeur .NET / C# / Angular
+Situation : Salarié préparant son passage en freelance
+Marché cible : Europe, avec priorité aux missions remote accessibles depuis la Belgique
+Objectif tarifaire : Plus de 500 €/jour
+Stratégie : Prospection automatisée avec validation humaine
+
+1. OBJECTIF DU PROJET
+
+Mettre en place un système commercial capable de détecter les missions freelance pertinentes, de les qualifier automatiquement, de préparer les candidatures, d’identifier les interlocuteurs commerciaux et de suivre les relances.
+
+L’objectif est de disposer d’un pipeline commercial actif avant de quitter son emploi salarié.
+
+Objectifs commerciaux
+
+Cibler des missions de 6 à 12 mois.
+Privilégier les missions remote en Europe.
+Tester un positionnement tarifaire de 550 à 650 €/jour.
+Développer un réseau de recruteurs et de sociétés de consultance.
+Réduire le temps consacré à la recherche manuelle.
+Mesurer les résultats pour améliorer continuellement la prospection.
+La fourchette tarifaire est un objectif de départ à valider avec les recruteurs et les offres réelles.
+
+2. POSITIONNEMENT COMMERCIAL
+
+Le positionnement doit mettre en avant la capacité à résoudre des problèmes techniques et métier.
+
+Positionnement A — Backend .NET
+
+Compétences à valoriser :
+
+C#, .NET et ASP.NET Core.
+Conception et développement d’API REST.
+Intégration de systèmes d’entreprise.
+SQL Server et PostgreSQL.
+Architecture orientée domaine et DDD.
+Qualité logicielle, tests et performance.
+Positionnement B — Full-stack .NET / Angular
+
+Compétences à valoriser :
+
+Développement backend et frontend.
+Angular et TypeScript.
+APIs métier.
+Applications d’entreprise.
+Intégration avec les bases de données.
+Maintenance évolutive et correction de problèmes.
+Positionnement C — Modernisation d’applications
+
+Compétences à valoriser :
+
+Évolution d’applications existantes.
+Modularisation des systèmes.
+Intégration de services.
+CI/CD et automatisation des déploiements.
+Cloud et AWS.
+Amélioration de la maintenabilité.
+Le niveau d’expérience doit toujours être présenté honnêtement. L’objectif est de vendre une expertise démontrable, pas un intitulé artificiellement senior.
+
+3. SOURCES DE MISSIONS
+
+Plateformes prioritaires
+
+Malt — https://www.malt.be/
+Créer un profil professionnel orienté résultats et développer les demandes entrantes.
+
+freelancermap — https://www.freelancermap.com/projects/remote
+Rechercher les contrats IT en Europe, notamment les missions C#/.NET et les offres allemandes.
+
+Free-Work — https://www.free-work.com/
+Surveiller les missions IT, particulièrement sur le marché français.
+
+LinkedIn Jobs — https://www.linkedin.com/jobs/
+Identifier les offres de mission et développer des relations directes avec les recruteurs.
+
+Autres sources
+
+Sociétés de consultance et ESN.
+Cabinets de recrutement IT.
+Pages carrières des entreprises.
+Alertes e-mail et flux RSS autorisés.
+Réseau professionnel et recommandations.
+Clients directs dans les secteurs de l’assurance, de la finance et des services B2B.
+Requêtes de recherche
+
+“Senior .NET Developer” freelance remote
+“C# Angular” contractor remote Europe
+“ASP.NET Core” freelance contract
+“Full Stack .NET Angular” Freiberufler Homeoffice
+“Azure .NET Consultant” contract
+“Software Engineer C#” avec les filtres freelance, contract et remote
+Pour chaque offre, vérifier le TJM, la durée, le lieu, la langue, la date de démarrage, les pays autorisés et les contraintes de présence.
+
+4. ARCHITECTURE DE L’AGENT IA
+
+Stack technique recommandée
+
+Composant
+
+Technologie
+
+Orchestration
+
+n8n
+
+Backend
+
+.NET 10 Minimal API
+
+Base de données
+
+PostgreSQL
+
+Interface
+
+Angular
+
+IA
+
+Modèle de langage avec sorties JSON structurées
+
+CRM
+
+HubSpot ou solution équivalente
+
+Notifications
+
+E-mail ou Telegram
+
+Déploiement initial
+
+Docker Compose
+
+Déploiement évolutif
+
+AWS, si nécessaire
+
+Flux général
+
+Collecter les nouvelles annonces.
+Normaliser et dédupliquer les données.
+Analyser les exigences avec l’IA.
+Calculer un score de pertinence.
+Enregistrer les résultats dans le CRM.
+Générer un brouillon de candidature.
+Soumettre le brouillon à validation.
+Enregistrer le contact et planifier le suivi.
+Mesurer les résultats commerciaux.
+Les cinq agents logiques
+
+Agent 1 — Scout
+
+Récupère les annonces et identifie les nouvelles opportunités.
+
+Agent 2 — Qualification
+
+Extrait les informations importantes : technologies, TJM, durée, lieu, remote et expérience demandée.
+
+Agent 3 — Matching
+
+Compare les exigences au CV et attribue un score explicable.
+
+Agent 4 — Commercial
+
+Prépare les messages personnalisés, sélectionne le CV approprié et propose les prochaines actions.
+
+Agent 5 — Pilotage
+
+Analyse les réponses, les entretiens, les taux de conversion et les sources les plus performantes.
+
+Ces agents peuvent être des étapes d’un workflow unique plutôt que des systèmes autonomes indépendants.
+
+5. SYSTÈME DE SCORING DES MISSIONS
+
+Le score initial est calculé sur 100 points.
+
+Critère
+
+Points
+
+Adéquation .NET / C# / Angular
+
+25
+
+TJM compatible avec l’objectif
+
+25
+
+Remote depuis la Belgique
+
+20
+
+Compétences et expérience
+
+15
+
+Durée et date de démarrage
+
+10
+
+Fiabilité de l’annonce et du contact
+
+5
+
+Total
+
+100
+
+Interprétation
+
+80–100 : priorité A, traitement rapide.
+65–79 : priorité B, informations à vérifier.
+Moins de 65 : priorité C, conservation ou exclusion.
+Les critères éliminatoires priment sur le score. Une mission qui ne peut pas être effectuée depuis la Belgique ne doit pas être considérée comme remote compatible.
+
+Un TJM absent doit être marqué « à confirmer » et non inventé.
+
+6. STRUCTURE DU CRM
+
+Objet Mission
+
+Identifiant.
+Titre.
+URL.
+Entreprise.
+Technologies.
+TJM annoncé.
+Mode de travail.
+Pays autorisés.
+Durée.
+Date de publication.
+Score IA.
+Statut.
+Objet Entreprise
+
+Nom.
+Secteur.
+Pays.
+Site web.
+Source.
+Historique des échanges.
+Objet Contact
+
+Nom professionnel.
+Fonction.
+Entreprise.
+Moyen de contact.
+Source des coordonnées.
+Date du dernier contact.
+Prochaine action.
+Objet Opportunité
+
+Mission associée.
+Statut commercial.
+TJM proposé.
+Disponibilité.
+Date d’entretien.
+Prochaine relance.
+Résultat final.
+Pipeline commercial
+
+À qualifier → Qualifiée → À approuver → Contacté → Échange planifié → Entretien client → Négociation → Gagnée / Perdue.
+
+Chaque opportunité active doit posséder une prochaine action et une date.
+
+7. MESSAGES DE PROSPECTION
+
+Modèle A — Premier contact recruteur
+
+Subject: Freelance .NET / Angular Engineer — Upcoming Availability
+
+Hi [Name],
+
+I’m a Software Engineer based in Belgium, specializing in C#, .NET, ASP.NET Core and Angular, with experience delivering enterprise business applications and APIs.
+
+I’m preparing my transition to freelance consulting and am exploring remote-first assignments across Europe, particularly in enterprise software, financial services and insurance.
+
+I’m interested in long-term assignments where I can contribute to backend development, API integration and full-stack delivery.
+
+Are you currently working on any relevant freelance opportunities? I’d be happy to share my CV and discuss my availability.
+
+Best regards,
+
+[Your Name]
+
+Modèle B — Candidature à une mission
+
+Subject: Application — [Mission Title]
+
+Hi [Name],
+
+I’ve reviewed your assignment for [Mission Title] and believe my experience with C#, .NET, ASP.NET Core and Angular could be relevant to the project.
+
+In my current enterprise environment, I’ve contributed to business application development, API implementation, database integration and the evolution of existing applications.
+
+I’d be interested in learning more about the technical scope, team setup, remote-working arrangements and expected contract duration.
+
+Could you also confirm the target daily rate and whether the assignment can be performed remotely from Belgium?
+
+Please find my CV attached.
+
+Best regards,
+
+[Your Name]
+
+Modèle C — Relance
+
+Subject: Follow-up — .NET / Angular freelance opportunities
+
+Hi [Name],
+
+I wanted to follow up on my previous message regarding potential .NET / Angular freelance assignments.
+
+I’m particularly interested in remote-first projects involving enterprise APIs, backend development and full-stack application delivery.
+
+If you have any current or upcoming opportunities that could match my profile, I’d be happy to discuss them.
+
+Best regards,
+
+[Your Name]
+
+Les messages doivent être adaptés aux informations réelles du CV et de l’offre. Toute prise de contact doit respecter les règles des plateformes et les exigences applicables en matière de prospection et de protection des données.
+
+8. WORKFLOWS D’AUTOMATISATION
+
+Workflow A — Détection quotidienne
+
+Récupérer les annonces depuis les sources autorisées.
+Normaliser les données.
+Dédupliquer les URL.
+Enregistrer les nouvelles missions.
+Workflow B — Qualification IA
+
+Extraire les critères.
+Calculer le score.
+Détecter les exigences manquantes.
+Écarter ou déclasser les offres non pertinentes.
+Workflow C — Rapport quotidien
+
+Envoyer un résumé des cinq meilleures opportunités avec :
+
+Le titre de la mission.
+Le lien.
+Le score.
+Le TJM connu.
+Les contraintes de localisation.
+Les prochaines actions proposées.
+Workflow D — Candidature et relance
+
+Générer le brouillon.
+Obtenir une validation humaine.
+Enregistrer le contact.
+Créer une tâche de suivi.
+Arrêter les relances lorsqu’une réponse est enregistrée.
+Workflow E — Analyse hebdomadaire
+
+Comparer les sources.
+Calculer les taux de réponse.
+Identifier les messages efficaces.
+Analyser les TJM proposés et signés.
+Ajuster les critères de recherche.
+Ne pas automatiser massivement l’extraction de profils ou les envois de messages contraires aux règles des plateformes.
+
+9. INDICATEURS DE PERFORMANCE
+
+Objectifs initiaux sur 30 jours
+
+Indicateur
+
+Objectif
+
+Missions qualifiées
+
+30–50
+
+Contacts ciblés
+
+40–60
+
+Conversations commerciales
+
+5–10
+
+Entretiens de qualification
+
+2–5
+
+Ces chiffres sont des objectifs de pilotage, pas des résultats garantis.
+
+KPI à suivre
+
+Taux de pertinence = missions qualifiées / annonces détectées.
+Taux de réponse = réponses / contacts sollicités.
+Taux d’entretien = entretiens / candidatures pertinentes.
+Taux de conversion = missions gagnées / opportunités qualifiées.
+TJM moyen proposé.
+TJM moyen signé.
+Délai entre publication et candidature.
+Part des missions réellement accessibles en remote depuis la Belgique.
+Temps consacré à la prospection par entretien obtenu.
+10. PLAN D’EXÉCUTION SUR 30 JOURS
+
+Semaine 1 — Fondations commerciales
+
+Finaliser le CV anglais.
+Optimiser LinkedIn et Malt.
+Fixer la disponibilité envisagée et la fourchette de TJM.
+Créer le CRM.
+Définir les recherches et les alertes.
+Semaine 2 — MVP technique
+
+Connecter deux ou trois sources autorisées.
+Stocker les annonces.
+Implémenter la déduplication.
+Ajouter le scoring IA.
+Générer le rapport quotidien.
+Semaine 3 — Prospection assistée
+
+Générer les brouillons de messages.
+Valider les candidatures.
+Enregistrer les réponses.
+Programmer les tâches de relance.
+Mesurer les premières conversions.
+Semaine 4 — Optimisation
+
+Analyser les sources les plus performantes.
+Supprimer les sources peu pertinentes.
+Ajuster les critères de scoring.
+Tester différents messages.
+Évaluer le positionnement tarifaire.
+11. SÉCURISER LE PASSAGE EN FREELANCE
+
+Avant de quitter son emploi :
+
+Vérifier le préavis et les clauses contractuelles.
+Étudier le statut juridique et les assurances nécessaires.
+Vérifier les conditions de cumul éventuel d’activités.
+Constituer une réserve financière adaptée.
+Confirmer le contrat, les conditions de paiement et la date de démarrage avant de considérer une mission comme acquise.
+Maintenir plusieurs pistes commerciales actives.
+12. ORDRE DE CONSTRUCTION RECOMMANDÉ
+
+Démarrer avec n8n, un CRM et des alertes de missions.
+Ajouter PostgreSQL et un backend .NET pour les règles métier.
+Ajouter l’IA pour l’extraction structurée, le matching et les brouillons.
+Ajouter une interface Angular lorsque le workflow initial apporte déjà de la valeur.
+Mesurer les résultats avant d’augmenter le niveau d’autonomie de l’agent.
+PRINCIPE DIRECTEUR
+
+Automatiser la détection et la préparation, garder le contrôle humain sur les engagements commerciaux.
+
+Le succès du système dépend moins du nombre de messages envoyés que de la pertinence des missions, de la qualité des contacts et de la capacité à transformer les opportunités en contrats rentables.
