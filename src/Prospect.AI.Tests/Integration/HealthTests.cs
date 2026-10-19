@@ -12,7 +12,8 @@ public class HealthTests(AppHostFixture fixture)
         await fixture.App.ResourceNotifications
             .WaitForResourceHealthyAsync(resourceName)
             .WaitAsync(AppHostFixture.DefaultTimeout);
-        using var httpClient = fixture.App.CreateHttpClient(resourceName);
+        // Plain HTTP: the HTTPS dev certificate is not trusted on Linux CI runners.
+        using var httpClient = fixture.App.CreateHttpClient(resourceName, "http");
 
         // Act
         using var response = await httpClient.GetAsync(healthPath);
