@@ -1,6 +1,26 @@
-@Server_HostAddress = http://localhost:5490
+# Manual API requests (VS Code REST Client, Rider or Visual Studio).
+# Start the app with `aspire run` first.
 
-GET {{Server_HostAddress}}/api/weatherforecast/
+@Server_HostAddress = http://localhost:5490
+@Keycloak_HostAddress = http://localhost:8080
+
+# Value of `Parameters:automation-api-key` from:
+#   dotnet user-secrets list --project Prospect.AI.AppHost
+@AutomationApiKey = paste-the-key-here
+
+### 1. Get an access token for the development user (dev realm only)
+# @name devToken
+POST {{Keycloak_HostAddress}}/realms/prospect/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=password&client_id=prospect-dev-cli&username=dev@prospect.local&password=dev-password&scope=openid email profile
+
+### 2. Current user (uses the token from request 1)
+GET {{Server_HostAddress}}/api/me
+Authorization: Bearer {{devToken.response.body.access_token}}
 Accept: application/json
 
-###
+### 3. Automation ping, as n8n calls it
+GET {{Server_HostAddress}}/api/automation/ping
+X-Api-Key: {{AutomationApiKey}}
+Accept: application/json

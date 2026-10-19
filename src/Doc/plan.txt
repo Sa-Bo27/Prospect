@@ -2,7 +2,7 @@ PLAN OPÉRATIONNEL DE PROSPECTION
 
 Freelance .NET / Next.js / React Natif (mobile) piloté par l’intelligence artificielle
 
-Profil : Développeur .NET / C# / Angular
+Profil : Développeur .NET / C# / Angular / Next.js
 Situation : Salarié préparant son passage en freelance
 Marché cible : Europe, avec priorité aux missions remote accessibles depuis la Belgique
 Objectif tarifaire : Plus de 500 €/jour
@@ -43,7 +43,7 @@ Positionnement B — Full-stack .NET / Angular
 Compétences à valoriser :
 
 Développement backend et frontend.
-Angular et TypeScript.
+Angular Next js et TypeScript.
 APIs métier.
 Applications d’entreprise.
 Intégration avec les bases de données.

@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push on the same branch cancels the run in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Web frontend (lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/frontend
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  dotnet:
+    name: .NET (build + tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: src/global.json
+
+      # The AppHost also starts the Vite frontend during integration tests.
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: src/frontend
+
+      - name: Restore
+        run: |
+          dotnet tool restore
+          dotnet restore Prospect.AI.sln
+
+      - name: Build
+        run: dotnet build Prospect.AI.sln --no-restore --configuration Release
+
+      # Kestrel needs a development certificate for the server's https endpoint.
+      - name: Create HTTPS development certificate
+        run: dotnet dev-certs https
+
+      # Integration tests start the whole Aspire app (Postgres, Redis, Keycloak, n8n) in Docker,
+      # which is available on GitHub-hosted Ubuntu runners.
+      - name: Test
+        run: >
+          dotnet test Prospect.AI.Tests
+          --no-build --configuration Release
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: src/TestResults

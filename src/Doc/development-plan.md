@@ -11,6 +11,8 @@ The `src/` repository currently contains a blank Aspire 13.6 starter: `Prospect.
 - CRM: **PostgreSQL = source of truth**, qualified opportunities **synced to HubSpot** (one-way, .NET → HubSpot).
 - UI: **React/Vite (web)** + **React Native / Expo (mobile)** with **full feature parity**.
 - AI: **Microsoft.Extensions.AI (`IChatClient`)**, swappable provider (Anthropic by default, configurable).
+- Authentication: **OpenID Connect with Keycloak** (container in Aspire). The API only validates standard JWTs (issuer + audience), so the provider can later be swapped (e.g. AWS Cognito) through configuration.
+- **Multi-user ready**: every business entity has an `OwnerId` and an automatic EF Core query filter, so the product can be opened to other users later without a data migration.
 - Language: **everything in English** — code, identifiers, comments, UI text, API, database, documentation, commits, n8n workflows, AI prompts and generated messages.
 
 **Guiding principle**: automate detection and preparation; no message is ever sent without human approval; no scraping that breaches platform terms (LinkedIn via email alerts or manual URL entry only).
@@ -24,7 +26,7 @@ The `src/` repository currently contains a blank Aspire 13.6 starter: `Prospect.
  n8n (cron, RSS, IMAP, Telegram) ──HTTP+ApiKey──► Prospect.AI.Server (Minimal API)
                                                     │  ├─ Domain (scoring, rules, pipeline)
  Web React/Vite ─┐                                  │  ├─ AI (IChatClient, JSON output)
- Mobile Expo  ───┴──Bearer (Identity)──────────────►│  ├─ EF Core → PostgreSQL
+ Mobile Expo  ───┴──Bearer (OIDC JWT, Keycloak)────►│  ├─ EF Core → PostgreSQL
                                                     │  ├─ Redis (cache)
                                                     │  └─ HubSpot sync (outbox)
                 └──────────────────────────────────────────┘
@@ -47,15 +49,18 @@ JS monorepo via **npm workspaces** (root `src/package.json`: `frontend`, `mobile
 ### AppHost (`Prospect.AI.AppHost/AppHost.cs`)
 - `AddPostgres("pg").WithDataVolume().AddDatabase("prospectdb")` (+ pgAdmin in dev).
 - Keep `AddRedis("cache")`.
+- `AddKeycloak("keycloak", 8080).WithDataVolume().WithRealmImport("./Realms")`: realm `prospect` with clients `prospect-web` and `prospect-mobile` (public, PKCE) plus `prospect-dev-cli` (dev only, password grant for tests) and a dev user. All access tokens carry the `prospect-api` audience.
 - `AddContainer("n8n", "n8nio/n8n")` with a volume, port 5678, `PROSPECT_API_URL` / `PROSPECT_API_KEY` variables (Aspire secret parameter).
-- Secret parameters: `ai-apikey`, `hubspot-token`, `telegram-bot-token`, `n8n-api-key`.
-- Server: `.WithReference(db).WithReference(cache)` + parameters; Vite unchanged; mobile started outside Aspire (`npx expo start`) pointing at the server's external URL.
+- Secret parameters: `automation-api-key` (generated, shared by n8n and the server); `ai-apikey` and `hubspot-token` added in the phases that use them. The Telegram token is stored as an n8n credential.
+- Server: `.WithReference(db).WithReference(cache)`, `Auth__Authority` = Keycloak realm URL; Vite pinned to port 5173 (registered redirect URI); mobile started outside Aspire (`npx expo start`) pointing at the server's external URL.
 
 ---
 
 ## 2. Data model (PostgreSQL, EF Core)
 
-Based on section 6 of the source document, extended for traceability:
+Based on section 6 of the source document, extended for traceability.
+
+**Ownership**: every business entity below implements `IOwnedEntity` (`OwnerId` = the user's `sub` claim from Keycloak). `ProspectDbContext` applies a global query filter (`OwnerId == current user`), indexes `OwnerId` and fills it automatically on insert. Background jobs that work across users opt out explicitly with `IgnoreQueryFilters()`. Users themselves live in Keycloak, not in this database.
 
 - **Source** (name, type RSS/Email/API/Manual, active, stats).
 - **RawPosting** (source, canonical URL, content hash, raw payload, collected at) — keeps the original.
@@ -104,7 +109,7 @@ Disqualifying rules take precedence (e.g. countries not allowed, on-site outside
 
 ## 5. API (`Prospect.AI.Server`, Minimal API groups)
 
-- **Auth**: ASP.NET Core Identity + `MapIdentityApi` (bearer tokens, works for web and mobile); single seeded user. Machine endpoints `/api/automation/*` protected by an **API key** (n8n).
+- **Auth**: standard JWT bearer validation (`Auth:Authority`, `Auth:Audience`), tokens issued by Keycloak; `ICurrentUser` reads the `sub` claim. `GET /api/me` returns the signed-in user. Machine endpoints `/api/automation/*` protected by an **API key** in the `X-Api-Key` header (n8n), `GET /api/automation/ping` to check the connection.
 - `/api/automation`: `POST ingest` (batch of raw postings → normalize, deduplicate, store), `POST qualify` (`ToQualify` missions → AI + score), `GET daily-report`, `POST followups/due`, `POST weekly-analysis`, `POST inbox/email` (parsed email/LinkedIn alerts).
 - `/api/missions`: filterable/paged list (priority, score, source, status), details + analysis, `POST from-url` (manual entry), requalify, dismiss.
 - `/api/opportunities`: CRUD, stage transition (validated by the domain), next action.
@@ -148,7 +153,7 @@ Screens (identical on both platforms):
 7. **Analytics**: section 9 KPIs, source comparison, day rates.
 8. **Settings**: profile, target day rate, CVs, sources, scoring weights.
 
-Web: React Router, TanStack Query, a UI library (e.g. Mantine or shadcn/ui), Recharts. Mobile: Expo Router, TanStack Query, Expo push notifications (relayed via the API, alongside Telegram), secure token storage (`expo-secure-store`).
+Web: React Router, TanStack Query, a UI library (e.g. Mantine or shadcn/ui), Recharts, OIDC sign-in with `oidc-client-ts` (Authorization Code + PKCE). Mobile: Expo Router, TanStack Query, `expo-auth-session` (Authorization Code + PKCE), Expo push notifications (relayed via the API, alongside Telegram), secure token storage (`expo-secure-store`). The sign-in page itself is hosted by Keycloak (registration, password reset, MFA).
 
 ---
 
@@ -156,7 +161,7 @@ Web: React Router, TanStack Query, a UI library (e.g. Mantine or shadcn/ui), Rec
 
 | Phase | Duration | Deliverable | Done when |
 |---|---|---|---|
-| **0 — Foundations** | 2–3 d | Domain/Infrastructure/Tests projects, Postgres + n8n in AppHost, EF Core + first migration, Identity auth + API key, demo code removed, GitHub Actions CI (build + tests). | `aspire run` starts everything; health checks green. |
+| **0 — Foundations** | 2–3 d | Domain/Infrastructure/Tests projects, Postgres + n8n + Keycloak in AppHost, EF Core with owner query filter, JWT auth + API key, demo code removed, GitHub Actions CI (build + tests). | `aspire run` starts everything; health checks green. |
 | **1 — Collection** | 3–4 d | Source/RawPosting/Mission entities, normalization, deduplication (canonical URL + hash), `/automation/ingest`, n8n workflow A with 2–3 permitted sources. | Real postings arrive daily with no duplicates. |
 | **2 — AI qualification** | 4–5 d | `IChatClient`, `MissionExtractor`, `ProfileMatcher`, `MissionScorer` + disqualifying rules (exhaustive unit tests), workflow B. | Every mission has an explained score; missing rate = "to confirm". |
 | **3 — Report & CRM** | 3–4 d | Workflow C (Telegram/email), Company/Contact/Opportunity, pipeline, outbox + HubSpot sync. | Top 5 received every morning; opportunities visible in HubSpot. |
@@ -174,6 +179,8 @@ The useful MVP (phases 0–3) is enough to feed prospecting while the UI is bein
 - Sources: RSS, official APIs, email alerts, manual entry — no LinkedIn scraping, no bulk sending.
 - GDPR: professional contact data only, contact-details source tracked, a contact can be deleted.
 - Secrets via Aspire parameters / user-secrets, never committed; n8n API key separate from the user account.
+- Passwords are never stored by the application: Keycloak handles credentials, MFA and password reset. The dev realm (dev user, password-grant client) is for local use only and must not be imported in production.
+- Strict data isolation between users through the owner query filter; covered by integration tests.
 
 ---
 

@@ -15,6 +15,8 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.JavaScript" Version="13.6.1" />
+    <PackageReference Include="Aspire.Hosting.Keycloak" Version="13.6.1-preview.1.26506.6" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="13.6.1" />
     <PackageReference Include="Aspire.Hosting.Redis" Version="13.6.1" />
   </ItemGroup>
 </Project>

@@ -514,3 +514,6 @@ appsettings.*.local.json
 
 # n8n local data (workflows are exported to n8n/workflows/ instead)
 .n8n/
+
+# MSBuild JavaScript SDK on macOS creates a folder literally named "obj\Debug"
+obj\\*
