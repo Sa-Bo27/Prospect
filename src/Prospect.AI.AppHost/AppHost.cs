@@ -30,7 +30,8 @@ var server = builder.AddProject<Projects.Prospect_AI_Server>("server")
     .WaitFor(keycloak)
     .WithEnvironment("Auth__Authority", ReferenceExpression.Create($"{keycloak.GetEndpoint("http")}/realms/prospect"))
     .WithEnvironment("Automation__ApiKey", automationApiKey)
-    .WithHttpHealthCheck("/health")
+    // Probed over plain HTTP: the HTTPS dev certificate is not trusted on Linux CI runners.
+    .WithHttpHealthCheck("/health", endpointName: "http")
     .WithExternalHttpEndpoints();
 
 // n8n handles scheduling and connectors (RSS, IMAP, Telegram) and calls the server API.

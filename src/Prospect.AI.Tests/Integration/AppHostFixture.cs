@@ -8,8 +8,8 @@ namespace Prospect.AI.Tests.Integration;
 /// </summary>
 public sealed class AppHostFixture : IAsyncLifetime
 {
-    // Generous timeout: the first run may need to pull container images.
-    public static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(3);
+    // Generous timeout: CI runners pull every container image (Keycloak, n8n, Postgres...) on each run.
+    public static readonly TimeSpan DefaultTimeout = TimeSpan.FromMinutes(5);
 
     public DistributedApplication App { get; private set; } = null!;
 
