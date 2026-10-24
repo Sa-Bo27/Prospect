@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find ~/Downloads ~/Desktop -maxdepth 3 -name \"*.trx\" -mmin -1440 2>/dev/null | head)",
+      "Read(//Users/sb/Downloads/**)"
+    ]
+  }
+}

@@ -1,11 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using Prospect.AI.Domain.Common;
+using Prospect.AI.Domain.Missions;
+using Prospect.AI.Domain.Sources;
 
 namespace Prospect.AI.Infrastructure.Persistence;
 
 public sealed class ProspectDbContext(DbContextOptions<ProspectDbContext> options, ICurrentUser currentUser)
     : DbContext(options)
 {
+    public DbSet<Source> Sources => Set<Source>();
+    public DbSet<RawPosting> RawPostings => Set<RawPosting>();
+    public DbSet<Mission> Missions => Set<Mission>();
+
     // Read by the owner query filter on every query (EF Core parameterizes DbContext members).
     private Guid? CurrentUserId => currentUser.UserId;
 
@@ -53,8 +59,8 @@ public sealed class ProspectDbContext(DbContextOptions<ProspectDbContext> option
     private void ApplyOwnerQueryFilter<TEntity>(ModelBuilder modelBuilder)
         where TEntity : class, IOwnedEntity
     {
+        // Each entity configuration declares an index starting with OwnerId to serve this filter.
         modelBuilder.Entity<TEntity>().HasQueryFilter(entity => entity.OwnerId == CurrentUserId);
-        modelBuilder.Entity<TEntity>().HasIndex(entity => entity.OwnerId);
     }
 
     private void AssignOwnerToNewEntities()
