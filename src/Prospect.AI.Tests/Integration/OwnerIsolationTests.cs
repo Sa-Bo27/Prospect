@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Prospect.AI.Domain.Common;
 using Prospect.AI.Domain.Sources;
-using Prospect.AI.Infrastructure;
 using Prospect.AI.Infrastructure.Persistence;
 
 namespace Prospect.AI.Tests.Integration;
@@ -78,22 +76,5 @@ public class OwnerIsolationTests(AppHostFixture fixture)
         await context.Sources.IgnoreQueryFilters().Where(source => source.Id == sourceId).ExecuteDeleteAsync();
     }
 
-    private async Task<ProspectDbContext> CreateContextAsync(Guid? userId)
-    {
-        // The server applies migrations at startup: wait for it so the tables exist.
-        await fixture.App.ResourceNotifications
-            .WaitForResourceHealthyAsync("server")
-            .WaitAsync(AppHostFixture.DefaultTimeout);
-
-        var connectionString = await fixture.App.GetConnectionStringAsync(DependencyInjection.DatabaseResourceName);
-        var options = new DbContextOptionsBuilder<ProspectDbContext>();
-        ProspectDbContextOptions.Configure(options.UseNpgsql(connectionString));
-
-        return new ProspectDbContext(options.Options, new FixedCurrentUser(userId));
-    }
-
-    private sealed class FixedCurrentUser(Guid? userId) : ICurrentUser
-    {
-        public Guid? UserId => userId;
-    }
+    private Task<ProspectDbContext> CreateContextAsync(Guid? userId) => fixture.CreateDbContextAsync(userId);
 }

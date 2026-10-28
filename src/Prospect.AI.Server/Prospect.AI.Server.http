@@ -24,3 +24,47 @@ Accept: application/json
 GET {{Server_HostAddress}}/api/automation/ping
 X-Api-Key: {{AutomationApiKey}}
 Accept: application/json
+
+### 4. Create a source for the current user
+# @name createSource
+POST {{Server_HostAddress}}/api/sources
+Authorization: Bearer {{devToken.response.body.access_token}}
+Content-Type: application/json
+
+{
+  "name": "freelancermap .NET",
+  "kind": "Rss",
+  "url": "https://www.freelancermap.com/feeds/projects.xml"
+}
+
+### 5. List the current user's sources
+GET {{Server_HostAddress}}/api/sources
+Authorization: Bearer {{devToken.response.body.access_token}}
+Accept: application/json
+
+### 6. Deactivate a source (use /activate to turn it back on)
+POST {{Server_HostAddress}}/api/sources/{{createSource.response.body.id}}/deactivate
+Authorization: Bearer {{devToken.response.body.access_token}}
+
+### 7. Active sources of all users, as workflow A reads them
+GET {{Server_HostAddress}}/api/automation/sources
+X-Api-Key: {{AutomationApiKey}}
+Accept: application/json
+
+### 8. Send collected postings for a source, as workflow A does
+POST {{Server_HostAddress}}/api/automation/ingest
+X-Api-Key: {{AutomationApiKey}}
+Content-Type: application/json
+
+{
+  "sourceId": "{{createSource.response.body.id}}",
+  "postings": [
+    {
+      "url": "https://www.example.com/jobs/senior-dotnet-developer?utm_source=rss",
+      "title": "Senior .NET developer (remote)",
+      "content": "Six-month assignment, C#, ASP.NET Core and Angular, fully remote within the EU.",
+      "publishedAt": "2026-10-28T07:00:00Z",
+      "companyName": "Example Corp"
+    }
+  ]
+}

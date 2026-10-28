@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Prospect.AI.Infrastructure.Ingestion;
 using Prospect.AI.Infrastructure.Persistence;
 
 namespace Prospect.AI.Infrastructure;
@@ -22,6 +24,9 @@ public static class DependencyInjection
 
         // Adds Aspire retries, health check and OpenTelemetry tracing to the registration above.
         builder.EnrichNpgsqlDbContext<ProspectDbContext>();
+
+        builder.Services.TryAddSingleton(TimeProvider.System);
+        builder.Services.AddScoped<PostingIngestionService>();
 
         return builder;
     }

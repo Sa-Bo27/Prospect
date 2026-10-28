@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Prospect.AI.Infrastructure;
 using Prospect.AI.Server.Authentication;
 using Prospect.AI.Server.Endpoints;
@@ -13,6 +14,10 @@ builder.AddProspectAuthentication();
 
 // Add services to the container.
 builder.Services.AddProblemDetails();
+
+// Enums travel as names ("Rss", "ToQualify"), which keeps n8n workflows and clients readable.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -36,6 +41,7 @@ app.UseOutputCache();
 
 var api = app.MapGroup("/api");
 api.MapAccountEndpoints();
+api.MapSourceEndpoints();
 api.MapAutomationEndpoints();
 
 app.MapDefaultEndpoints();

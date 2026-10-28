@@ -7,10 +7,6 @@ namespace Prospect.AI.Tests.Integration;
 [Collection(AppHostCollection.Name)]
 public class AuthenticationTests(AppHostFixture fixture)
 {
-    // Development user imported with the realm (Prospect.AI.AppHost/Realms/prospect-realm.json).
-    private const string DevUserName = "dev@prospect.local";
-    private const string DevUserPassword = "dev-password";
-
     [Fact]
     public async Task MeWithoutTokenReturnsUnauthorized()
     {
@@ -33,7 +29,7 @@ public class AuthenticationTests(AppHostFixture fixture)
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<JsonElement>();
         Assert.True(Guid.TryParse(body.GetProperty("userId").GetString(), out _));
-        Assert.Equal(DevUserName, body.GetProperty("email").GetString());
+        Assert.Equal(AppHostFixture.DevUserName, body.GetProperty("email").GetString());
     }
 
     [Theory]
@@ -75,38 +71,9 @@ public class AuthenticationTests(AppHostFixture fixture)
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
-    private async Task<HttpClient> CreateServerClientAsync()
-    {
-        await fixture.App.ResourceNotifications
-            .WaitForResourceHealthyAsync("server")
-            .WaitAsync(AppHostFixture.DefaultTimeout);
-        return fixture.App.CreateHttpClient("server", "http");
-    }
+    private Task<HttpClient> CreateServerClientAsync() => fixture.CreateServerClientAsync();
 
-    private async Task<string> GetDevUserAccessTokenAsync()
-    {
-        using var keycloak = fixture.App.CreateHttpClient("keycloak", "http");
-        using var response = await keycloak.PostAsync(
-            "/realms/prospect/protocol/openid-connect/token",
-            new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "password",
-                ["client_id"] = "prospect-dev-cli",
-                ["username"] = DevUserName,
-                ["password"] = DevUserPassword,
-                ["scope"] = "openid email profile",
-            }));
-        response.EnsureSuccessStatusCode();
+    private Task<string> GetDevUserAccessTokenAsync() => fixture.GetDevUserAccessTokenAsync();
 
-        var token = await response.Content.ReadFromJsonAsync<JsonElement>();
-        return token.GetProperty("access_token").GetString()!;
-    }
-
-    private async Task<string> GetAutomationApiKeyAsync()
-    {
-        var parameter = fixture.App.Services.GetRequiredService<DistributedApplicationModel>()
-            .Resources.OfType<ParameterResource>()
-            .Single(resource => resource.Name == "automation-api-key");
-        return (await parameter.GetValueAsync(CancellationToken.None))!;
-    }
+    private Task<string> GetAutomationApiKeyAsync() => fixture.GetAutomationApiKeyAsync();
 }
